@@ -29,16 +29,17 @@ y = rbinom(100,1,pr)
 knitr::kable(head(cbind(round(X,2),y), 10))
 
 ## ----echo=T, warning=F, message=F----------------------------------------
+require(correlbinom)
 rho = 0.33
-ntrees = 1000
+ntrees = 250
 
-cbinom = correlbinom::correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, 
+cbinom = correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, 
                                   precision = 1024, model = 'kuk')
 
 
 ## ----echo=T, warning=F, message=F----------------------------------------
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .6,
+                     ntrees = ntrees,percent_features = .6,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, 
                      sampsize = round(nrow(X)*.33))
 print(binom.rf)
@@ -48,21 +49,21 @@ print(binom.rf)
 # set.seed(324)
 
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = 1,
+                     ntrees = ntrees,percent_features = 1,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 cat('\n\nbinomialRF 100%\n\n')
 print(binom.rf)
 
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .8,
+                     ntrees = ntrees,percent_features = .8,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 cat('\n\nbinomialRF 80%\n\n')
 print(binom.rf)
 
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .6,
+                     ntrees = ntrees,percent_features = .6,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 cat('\n\nbinomialRF 60%\n\n')
@@ -72,7 +73,7 @@ print(binom.rf)
 set.seed(324)
 
 binom.rf1000 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .5,
+                     ntrees = ntrees,percent_features = .5,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 
@@ -80,7 +81,7 @@ binom.rf1000 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
 rho = 0.33
 ntrees = 500
 
-cbinom = correlbinom::correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, precision = 1024, model = 'kuk')
+cbinom = correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, precision = 1024, model = 'kuk')
 
 binom.rf500 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
                      ntrees = ntrees,percent_features = .5,
@@ -89,10 +90,10 @@ binom.rf500 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
 
 
 
-cat('\n\nbinomialRF 500 trees\n\n')
+cat('\n\nbinomialRF 250 trees\n\n')
 print(binom.rf500)
 
-cat('\n\nbinomialRF 1000 trees \n\n')
+cat('\n\nbinomialRF 500 trees \n\n')
 print(binom.rf1000)
 
 

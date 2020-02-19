@@ -13,7 +13,7 @@
 
 <meta name="author" content="Samir Rachid Zaim" />
 
-<meta name="date" content="2020-01-20" />
+<meta name="date" content="2020-02-19" />
 
 <title>binomialRF Feature Selection Vignette</title>
 
@@ -304,7 +304,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">binomialRF Feature Selection Vignette</h1>
 <h4 class="author">Samir Rachid Zaim</h4>
-<h4 class="date">2020-01-20</h4>
+<h4 class="date">2020-02-19</h4>
 
 
 
@@ -492,31 +492,31 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="generating-the-stable-correlated-binomial-distribution" class="section level2">
 <h2>Generating the Stable Correlated Binomial Distribution</h2>
 <p>Since the binomialRF requires a correlation adjustment to adjust for the tree-to-tree sampling correlation, we first generate the appropriately-parameterized stable correlated binomial distribution. Note, the correlbinom function call can take a while to execute for large number trials (i.e., trials &gt; 1000).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">rho =<span class="st"> </span><span class="fl">0.33</span></a>
-<a class="sourceLine" id="cb2-2" title="2">ntrees =<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4">cbinom =<span class="st"> </span>correlbinom<span class="op">::</span><span class="kw">correlbinom</span>(rho, <span class="dt">successprob =</span>  <span class="dv">1</span><span class="op">/</span><span class="kw">ncol</span>(X), <span class="dt">trials =</span> ntrees, </a>
-<a class="sourceLine" id="cb2-5" title="5">                                  <span class="dt">precision =</span> <span class="dv">1024</span>, <span class="dt">model =</span> <span class="st">&#39;kuk&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">require</span>(correlbinom)</a>
+<a class="sourceLine" id="cb2-2" title="2">rho =<span class="st"> </span><span class="fl">0.33</span></a>
+<a class="sourceLine" id="cb2-3" title="3">ntrees =<span class="st"> </span><span class="dv">250</span></a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5">cbinom =<span class="st"> </span><span class="kw">correlbinom</span>(rho, <span class="dt">successprob =</span>  <span class="dv">1</span><span class="op">/</span><span class="kw">ncol</span>(X), <span class="dt">trials =</span> ntrees, </a>
+<a class="sourceLine" id="cb2-6" title="6">                                  <span class="dt">precision =</span> <span class="dv">1024</span>, <span class="dt">model =</span> <span class="st">&#39;kuk&#39;</span>)</a></code></pre></div>
 </div>
 <div id="binomialrf-function-call" class="section level2">
 <h2>binomialRF Function Call</h2>
 <p>Then we can run the binomialRF function call as below:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">binom.rf &lt;-<span class="st"> </span>binomialRF<span class="op">::</span><span class="kw">binomialRF</span>(X,<span class="kw">factor</span>(y), <span class="dt">fdr.threshold =</span> <span class="fl">.05</span>,</a>
-<a class="sourceLine" id="cb3-2" title="2">                     <span class="dt">ntrees =</span> <span class="dv">1000</span>,<span class="dt">percent_features =</span> <span class="fl">.6</span>,</a>
+<a class="sourceLine" id="cb3-2" title="2">                     <span class="dt">ntrees =</span> ntrees,<span class="dt">percent_features =</span> <span class="fl">.6</span>,</a>
 <a class="sourceLine" id="cb3-3" title="3">                     <span class="dt">fdr.method =</span> <span class="st">&#39;BY&#39;</span>, <span class="dt">user_cbinom_dist =</span> cbinom, </a>
 <a class="sourceLine" id="cb3-4" title="4">                     <span class="dt">sampsize =</span> <span class="kw">round</span>(<span class="kw">nrow</span>(X)<span class="op">*</span>.<span class="dv">33</span>))</a>
 <a class="sourceLine" id="cb3-5" title="5"><span class="kw">print</span>(binom.rf)</a>
 <a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt;     variable freq significance adjSignificance</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; X2        X2  447            0               0</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; X1        X1  350            0               0</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; X3        X3  123            1               1</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; X6        X6   20            1               1</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; X7        X7   20            1               1</span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; X8        X8   15            1               1</span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; X4        X4   12            1               1</span></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; X5        X5    5            1               1</span></a>
-<a class="sourceLine" id="cb3-15" title="15"><span class="co">#&gt; X10      X10    5            1               1</span></a>
-<a class="sourceLine" id="cb3-16" title="16"><span class="co">#&gt; X9        X9    3            1               1</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; X2        X2  114 0.000000e+00     0.00000e+00</span></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; X1        X1   94 3.765189e-09     4.79322e-08</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; X3        X3   23 9.999999e-01     1.00000e+00</span></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; X6        X6    6 1.000000e+00     1.00000e+00</span></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; X7        X7    5 1.000000e+00     1.00000e+00</span></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; X8        X8    5 1.000000e+00     1.00000e+00</span></a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; X4        X4    1 1.000000e+00     1.00000e+00</span></a>
+<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; X5        X5    1 1.000000e+00     1.00000e+00</span></a>
+<a class="sourceLine" id="cb3-15" title="15"><span class="co">#&gt; X10      X10    1 1.000000e+00     1.00000e+00</span></a></code></pre></div>
 </div>
 </div>
 <div id="tuning-parameters" class="section level1">
@@ -528,74 +528,70 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 #&gt; 
 #&gt; binomialRF 100%
 #&gt;    variable freq significance adjSignificance
-#&gt; X2       X2  581            0               0
-#&gt; X1       X1  367            0               0
-#&gt; X3       X3   42            1               1
-#&gt; X6       X6    3            1               1
-#&gt; X7       X7    3            1               1
-#&gt; X4       X4    1            1               1
-#&gt; X5       X5    1            1               1
-#&gt; X8       X8    1            1               1
-#&gt; X9       X9    1            1               1
+#&gt; X2       X2  151 0.000000e+00    0.000000e+00
+#&gt; X1       X1   88 3.616441e-07    2.658084e-06
+#&gt; X3       X3    8 1.000000e+00    1.000000e+00
+#&gt; X5       X5    1 1.000000e+00    1.000000e+00
+#&gt; X6       X6    1 1.000000e+00    1.000000e+00
+#&gt; X8       X8    1 1.000000e+00    1.000000e+00
 #&gt; 
 #&gt; 
 #&gt; binomialRF 80%
 #&gt;     variable freq significance adjSignificance
-#&gt; X2        X2  527            0               0
-#&gt; X1        X1  367            0               0
-#&gt; X3        X3   83            1               1
-#&gt; X7        X7   10            1               1
-#&gt; X6        X6    8            1               1
-#&gt; X5        X5    2            1               1
-#&gt; X4        X4    1            1               1
-#&gt; X8        X8    1            1               1
-#&gt; X10      X10    1            1               1
+#&gt; X2        X2  128 0.000000e+00     0.000000000
+#&gt; X1        X1   83 1.021044e-05     0.000111002
+#&gt; X3        X3   25 9.999994e-01     1.000000000
+#&gt; X6        X6    5 1.000000e+00     1.000000000
+#&gt; X7        X7    4 1.000000e+00     1.000000000
+#&gt; X8        X8    2 1.000000e+00     1.000000000
+#&gt; X10      X10    2 1.000000e+00     1.000000000
+#&gt; X4        X4    1 1.000000e+00     1.000000000
 #&gt; 
 #&gt; 
 #&gt; binomialRF 60%
 #&gt;     variable freq significance adjSignificance
-#&gt; X2        X2  448            0               0
-#&gt; X1        X1  351            0               0
-#&gt; X3        X3  128            1               1
-#&gt; X7        X7   23            1               1
-#&gt; X6        X6   21            1               1
-#&gt; X10      X10    9            1               1
-#&gt; X8        X8    8            1               1
-#&gt; X5        X5    7            1               1
-#&gt; X4        X4    4            1               1
-#&gt; X9        X9    1            1               1</code></pre>
+#&gt; X2        X2  114 0.000000e+00    0.000000e+00
+#&gt; X1        X1   84 5.416284e-06    7.932062e-05
+#&gt; X3        X3   20 1.000000e+00    1.000000e+00
+#&gt; X6        X6    8 1.000000e+00    1.000000e+00
+#&gt; X4        X4    6 1.000000e+00    1.000000e+00
+#&gt; X7        X7    4 1.000000e+00    1.000000e+00
+#&gt; X8        X8    4 1.000000e+00    1.000000e+00
+#&gt; X9        X9    4 1.000000e+00    1.000000e+00
+#&gt; X5        X5    3 1.000000e+00    1.000000e+00
+#&gt; X10      X10    3 1.000000e+00    1.000000e+00</code></pre>
 </div>
 <div id="ntrees" class="section level2">
 <h2>ntrees</h2>
 <p>We recommend growing at least 500 to 1,000 trees at a minimum so that the algorithm has a chance to stabilize, but also recommend choosing ntrees as a function of the number of features in your dataset. The ntrees tuning parameter must be set in conjunction with the percent_features as these two are inter-connectedm as well as the number of true features in the model. Since the correlbinom function call is slow to execute for ntrees &gt; 1000, we recommend growing random forests with only 500-1000 trees.</p>
 <pre><code>#&gt; 
 #&gt; 
+#&gt; binomialRF 250 trees
+#&gt;     variable freq significance adjSignificance
+#&gt; X2        X2  191 0.000000e+00     0.00000e+00
+#&gt; X1        X1  172 1.406475e-11     2.05976e-10
+#&gt; X3        X3   64 9.999997e-01     1.00000e+00
+#&gt; X7        X7   26 1.000000e+00     1.00000e+00
+#&gt; X6        X6    9 1.000000e+00     1.00000e+00
+#&gt; X10      X10    9 1.000000e+00     1.00000e+00
+#&gt; X4        X4    8 1.000000e+00     1.00000e+00
+#&gt; X5        X5    8 1.000000e+00     1.00000e+00
+#&gt; X9        X9    8 1.000000e+00     1.00000e+00
+#&gt; X8        X8    5 1.000000e+00     1.00000e+00
+#&gt; 
+#&gt; 
 #&gt; binomialRF 500 trees
 #&gt;     variable freq significance adjSignificance
-#&gt; X2        X2  185 1.110223e-15    3.251808e-14
-#&gt; X1        X1  167 3.544187e-10    5.190406e-09
-#&gt; X3        X3   75 9.998814e-01    1.000000e+00
-#&gt; X7        X7   25 1.000000e+00    1.000000e+00
-#&gt; X10      X10   14 1.000000e+00    1.000000e+00
-#&gt; X6        X6   13 1.000000e+00    1.000000e+00
-#&gt; X8        X8    7 1.000000e+00    1.000000e+00
-#&gt; X5        X5    5 1.000000e+00    1.000000e+00
-#&gt; X9        X9    5 1.000000e+00    1.000000e+00
-#&gt; X4        X4    4 1.000000e+00    1.000000e+00
-#&gt; 
-#&gt; 
-#&gt; binomialRF 1000 trees
-#&gt;     variable freq significance adjSignificance
-#&gt; X2        X2  385            0               0
-#&gt; X1        X1  332            0               0
-#&gt; X3        X3  131            1               1
-#&gt; X7        X7   51            1               1
-#&gt; X6        X6   33            1               1
-#&gt; X8        X8   20            1               1
-#&gt; X10      X10   13            1               1
-#&gt; X4        X4   12            1               1
-#&gt; X9        X9   12            1               1
-#&gt; X5        X5   11            1               1</code></pre>
+#&gt; X2        X2   91 3.978159e-08    1.165190e-06
+#&gt; X1        X1   87 7.297797e-07    1.068751e-05
+#&gt; X3        X3   35 9.988915e-01    1.000000e+00
+#&gt; X6        X6   12 1.000000e+00    1.000000e+00
+#&gt; X7        X7   11 1.000000e+00    1.000000e+00
+#&gt; X8        X8    5 1.000000e+00    1.000000e+00
+#&gt; X9        X9    3 1.000000e+00    1.000000e+00
+#&gt; X10      X10    3 1.000000e+00    1.000000e+00
+#&gt; X5        X5    2 1.000000e+00    1.000000e+00
+#&gt; X4        X4    1 1.000000e+00    1.000000e+00</code></pre>
 </div>
 </div>
 

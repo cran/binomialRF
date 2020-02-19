@@ -10,6 +10,7 @@
 #' @param percent_features what percentage of L do we subsample at each tree? Should be a proportion between (0,1)
 #' @param K for multi-way interactions, how deep should the interactions be?
 #' @param cbinom_dist user-supplied correlated binomial distribution
+#' @param sampsize user-supplied sample size for random forest
 #'
 #' @references Zaim, SZ; Kenost, C.; Lussier, YA; Zhang, HH. binomialRF: Scalable Feature Selection and Screening for Random Forests to Identify Biomarkers and Their Interactions, bioRxiv, 2019.
 #'
@@ -31,10 +32,26 @@
 #' ###############################
 #' ### Run interaction model
 #' ###############################
+#' 
+#' require(correlbinom)
+#' 
+#' rho = 0.33
+#' ntrees = 250
+#' cbinom = correlbinom(rho, successprob =  calculateBinomialP_Interaction(10, .5,2), 
+#'                                trials = ntrees, precision = 1024, model = 'kuk')
 #'
+#' k.binom.rf <-k_binomialRF(X,y, fdr.threshold = .05,fdr.method = 'BY',
+#'                       ntrees = ntrees,percent_features = .5,
+#'                       cbinom_dist=cbinom,
+#'                       sampsize=round(nrow(X)*rho))
+#'
+#'
+#' 
+#'
+#' @export
 
-
-k_binomialRF <- function(X,y , fdr.threshold=0.05, fdr.method='BY', ntrees=2000, percent_features=0.3, K=2, cbinom_dist=NULL){
+k_binomialRF <- function(X,y , fdr.threshold=0.05, fdr.method='BY', ntrees=2000, percent_features=0.3, K=2, cbinom_dist=NULL,
+                         sampsize = nrow(X) *.4){
 
   if(!is.numeric(ntrees)  | !is.numeric(percent_features)| !is.numeric(fdr.threshold)){
     stop("Error: threshold, ntrees, and percent_features should be numeric inputs")

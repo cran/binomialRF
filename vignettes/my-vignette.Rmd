@@ -90,10 +90,11 @@ knitr::kable(head(cbind(round(X,2),y), 10))
 Since the binomialRF requires a correlation adjustment to adjust for the tree-to-tree sampling correlation, we first generate the appropriately-parameterized stable correlated binomial distribution. Note, the correlbinom function call can take a while to execute for large number trials (i.e., trials > 1000). 
 
 ```{r echo=T, warning=F, message=F}
+require(correlbinom)
 rho = 0.33
-ntrees = 1000
+ntrees = 250
 
-cbinom = correlbinom::correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, 
+cbinom = correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, 
                                   precision = 1024, model = 'kuk')
 
 ```
@@ -104,7 +105,7 @@ Then we can run the binomialRF function call as below:
 
 ```{r echo=T, warning=F, message=F}
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .6,
+                     ntrees = ntrees,percent_features = .6,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, 
                      sampsize = round(nrow(X)*.33))
 print(binom.rf)
@@ -121,21 +122,21 @@ Note that since the binomial exact test is contingent on a test statistic measur
 # set.seed(324)
 
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = 1,
+                     ntrees = ntrees,percent_features = 1,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 cat('\n\nbinomialRF 100%\n\n')
 print(binom.rf)
 
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .8,
+                     ntrees = ntrees,percent_features = .8,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 cat('\n\nbinomialRF 80%\n\n')
 print(binom.rf)
 
 binom.rf <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .6,
+                     ntrees = ntrees,percent_features = .6,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 cat('\n\nbinomialRF 60%\n\n')
@@ -151,7 +152,7 @@ We recommend growing at least 500 to 1,000 trees at a minimum so that the algori
 set.seed(324)
 
 binom.rf1000 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
-                     ntrees = 1000,percent_features = .5,
+                     ntrees = ntrees,percent_features = .5,
                      fdr.method = 'BY', user_cbinom_dist = cbinom, sampsize = round(nrow(X)*.33))
 
 
@@ -159,7 +160,7 @@ binom.rf1000 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
 rho = 0.33
 ntrees = 500
 
-cbinom = correlbinom::correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, precision = 1024, model = 'kuk')
+cbinom = correlbinom(rho, successprob =  1/ncol(X), trials = ntrees, precision = 1024, model = 'kuk')
 
 binom.rf500 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
                      ntrees = ntrees,percent_features = .5,
@@ -168,10 +169,10 @@ binom.rf500 <- binomialRF::binomialRF(X,factor(y), fdr.threshold = .05,
 
 
 
-cat('\n\nbinomialRF 500 trees\n\n')
+cat('\n\nbinomialRF 250 trees\n\n')
 print(binom.rf500)
 
-cat('\n\nbinomialRF 1000 trees \n\n')
+cat('\n\nbinomialRF 500 trees \n\n')
 print(binom.rf1000)
 
 ```

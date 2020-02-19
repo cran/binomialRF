@@ -5,7 +5,8 @@
 \title{random forest feature selection based on binomial exact test}
 \usage{
 k_binomialRF(X, y, fdr.threshold = 0.05, fdr.method = "BY",
-  ntrees = 2000, percent_features = 0.3, K = 2, cbinom_dist = NULL)
+  ntrees = 2000, percent_features = 0.3, K = 2, cbinom_dist = NULL,
+  sampsize = nrow(X) * 0.4)
 }
 \arguments{
 \item{X}{design matrix}
@@ -23,6 +24,8 @@ k_binomialRF(X, y, fdr.threshold = 0.05, fdr.method = "BY",
 \item{K}{for multi-way interactions, how deep should the interactions be?}
 
 \item{cbinom_dist}{user-supplied correlated binomial distribution}
+
+\item{sampsize}{user-supplied sample size for random forest}
 }
 \value{
 a data.frame with 4 columns: Feature Name, Frequency Selected, Probability of Selecting it randomly, Adjusted P-value based on \code{fdr.method}
@@ -46,6 +49,21 @@ y = rbinom(100,1,pr)
 ###############################
 ### Run interaction model
 ###############################
+
+require(correlbinom)
+
+rho = 0.33
+ntrees = 250
+cbinom = correlbinom(rho, successprob =  calculateBinomialP_Interaction(10, .5,2), 
+                               trials = ntrees, precision = 1024, model = 'kuk')
+
+k.binom.rf <-k_binomialRF(X,y, fdr.threshold = .05,fdr.method = 'BY',
+                      ntrees = ntrees,percent_features = .5,
+                      cbinom_dist=cbinom,
+                      sampsize=round(nrow(X)*rho))
+
+
+
 
 }
 \references{

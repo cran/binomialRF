@@ -2,3 +2,5 @@
 
 export(binomialRF)
 export(calculateBinomialP)
+export(calculateBinomialP_Interaction)
+export(k_binomialRF)

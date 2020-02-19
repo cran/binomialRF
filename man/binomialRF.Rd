@@ -50,11 +50,17 @@ y = as.factor(rbinom(100,1,pr))
 ###############################
 ### Run binomialRF
 ###############################
+require(correlbinom)
+
+rho = 0.33
+ntrees = 250
+cbinom = correlbinom(rho, successprob =  calculateBinomialP(10, .5), trials = ntrees, 
+                               precision = 1024, model = 'kuk')
 
 binom.rf <-binomialRF(X,y, fdr.threshold = .05,fdr.method = 'BY',
-                      ntrees = 2000,percent_features = .5,
-                      keep.both=FALSE, user_cbinom_dist=NULL,
-                      sampsize=round(nrow(X)*.63))
+                      ntrees = ntrees,percent_features = .5,
+                      keep.both=FALSE, user_cbinom_dist=cbinom,
+                      sampsize=round(nrow(X)*rho))
 
 print(binom.rf)
 }
