@@ -3,8 +3,7 @@
   library('data.table')
   library('stats')
   library('binomialRF')
-  library('ggplot2')
-  
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"

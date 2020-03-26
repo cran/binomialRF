@@ -3,4 +3,5 @@
 export(binomialRF)
 export(calculateBinomialP)
 export(calculateBinomialP_Interaction)
+export(geneset_binomialRF)
 export(k_binomialRF)

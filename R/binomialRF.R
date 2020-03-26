@@ -117,6 +117,7 @@ binomialRF <- function(X,y , fdr.threshold=.05, fdr.method='BY', ntrees=2000, pe
   rc.main.effects <- data.frame(rc.main.effects[-1, ])
   colnames(rc.main.effects) <- col.names
   rc.main.effects[is.na(rc.main.effects)] <- 0
+  rc.main.effects <- data.table::as.data.table(rc.main.effects)
   
   #### GIVES YOU Negative Log-Likelihood 
   #### for probaiblity ditrsitrubion
